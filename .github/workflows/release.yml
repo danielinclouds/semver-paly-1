@@ -31,12 +31,15 @@ jobs:
       run: go test -v .
     
     - name: Build the Docker image
-      run: echo "Building Docker image semver-play-1:${{ github.sha }}"
+      run: |
+        LONG_SHA=${{ github.sha }}"
+        SHORT_SHA="${LONG_SHA:0:7}"
+        echo "Building Docker image semver-play-1:${SHORT_SHA}"
       
     - name: Push Docker image
-      run: echo "Pushing Docker image semver-play-1:${{ github.sha }}"
+      run: echo "Pushing Docker image semver-play-1:${SHORT_SHA}"
     
-    
+
       
       
       # docker build . --file Dockerfile --tag semver-play-1:${{ github.sha }}
