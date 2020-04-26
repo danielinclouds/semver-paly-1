@@ -39,6 +39,12 @@ jobs:
     - name: Push Docker image
       run: echo "Pushing Docker image semver-play-1:${SHORT_SHA}"
     
+    
+    - name: Tag Repo
+      run: |
+        git tag tag_test
+        hub push --tags  
+    
 
       
       
