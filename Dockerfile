@@ -7,6 +7,6 @@ RUN apk --no-cache add ca-certificates
 
 USER 65534
 WORKDIR /app/
-COPY --from=builder /app/app .
+COPY app .
 EXPOSE ${PORT}
 CMD ["./app"]
