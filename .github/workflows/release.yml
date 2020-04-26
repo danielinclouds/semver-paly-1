@@ -29,3 +29,14 @@ jobs:
 
     - name: Test
       run: go test -v .
+    
+    - name: Build the Docker image
+      run: echo "Building Docker image semver-play-1:${{ github.sha }}"
+      
+    - name: Push Docker image
+      run: echo "Pushing Docker image semver-play-1:${{ github.sha }}"
+    
+    
+      
+      
+      # docker build . --file Dockerfile --tag semver-play-1:${{ github.sha }}
