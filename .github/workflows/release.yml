@@ -32,7 +32,7 @@ jobs:
     
     - name: Build the Docker image
       run: |
-        LONG_SHA=${{ github.sha }}"
+        LONG_SHA=${{ github.sha }}
         SHORT_SHA="${LONG_SHA:0:7}"
         echo "Building Docker image semver-play-1:${SHORT_SHA}"
       
