@@ -25,25 +25,31 @@ jobs:
         go get -v -t -d ./...
 
     - name: Build
-      run: go build -v .
+      run: go build -v -o app .
 
     - name: Test
       run: go test -v .
+
+    - name: Log into Docker Hub
+      run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u danielinclouds --password-stdin
     
     - name: Build the Docker image
       run: |
         LONG_SHA=${{ github.sha }}
         SHORT_SHA="${LONG_SHA:0:7}"
-        echo "Building Docker image semver-play-1:${SHORT_SHA}"
+        docker build -t danielinclouds/semver-play-1:${SHORT_SHA} . --build-arg=PORT=8080
       
     - name: Push Docker image
-      run: echo "Pushing Docker image semver-play-1:${SHORT_SHA}"
-    
+      run: |
+        LONG_SHA=${{ github.sha }}
+        SHORT_SHA="${LONG_SHA:0:7}"
+        docker push danielinclouds/semver-play-1:${SHORT_SHA} 
     
     - name: Tag Repo
       run: |
         git tag tag_test
-        hub push --tags  
+        hub push --tags
+    
     
 
       
