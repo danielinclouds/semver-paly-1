@@ -18,6 +18,7 @@ jobs:
     - name: Print event
       run: |
         echo ${{ github.event }}
+        echo ${{ github.event.pull_request.merged }}
     
     - name: Step 1
       run: |
