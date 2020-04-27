@@ -41,7 +41,7 @@ jobs:
 
     - name: Find next release version
       run: |
-        VERSION=$(jx-release-version)
+        VERSION=$(./jx-release-version)
         echo ::set-env name=release_version::$VERSION
 
     - name: Test release_version
