@@ -1,8 +1,8 @@
-name: Go
+name: Go Push
 
 on:
-  push:
-    branches: [ master ]
+- push
+- pull_request
 
 jobs:
 
@@ -31,7 +31,8 @@ jobs:
       run: go test -v .
 
     - name: Log into Docker Hub
-      run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u danielinclouds --password-stdin
+      run: |
+        echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u danielinclouds --password-stdin
     
     - name: Build the Docker image
       run: |
@@ -44,14 +45,3 @@ jobs:
         LONG_SHA=${{ github.sha }}
         SHORT_SHA="${LONG_SHA:0:7}"
         docker push danielinclouds/semver-play-1:${SHORT_SHA} 
-    
-    - name: Tag Repo
-      run: |
-        git tag tag_test
-        hub push --tags
-    
-    
-
-      
-      
-      # docker build . --file Dockerfile --tag semver-play-1:${{ github.sha }}
