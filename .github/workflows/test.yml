@@ -24,5 +24,6 @@ jobs:
         echo " Step 2"
 
     - name: Step 3
+      if: github.event.pull_request.merged == true
       run: |
         echo " Step 3"
