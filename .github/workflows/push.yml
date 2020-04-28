@@ -2,16 +2,18 @@ name: Go Push
 
 on:
   push:
-    branches-ignore:
+    branches-ignore: 
       - master
   pull_request:
-    branches:
-      - master
+    types: 
+      - opened
+      - reopened
+      - synchronize
+      - closed
 
 jobs:
 
   build:
-    if: github.event.pull_request.merged != true
     name: Build
     runs-on: ubuntu-latest
     steps:
@@ -35,10 +37,37 @@ jobs:
     - name: Test
       run: go test -v .
 
-    - name: Push Docker Image
+    - name: Install jx-release-version
+      if: github.event.pull_request.merged == true
+      run: |
+        wget https://github.com/jenkins-x/jx-release-version/releases/download/v1.0.24/jx-release-version_1.0.24_linux_amd64.tar.gz
+        tar zxvf jx-release-version*
+        chmod +x jx-release-version
+
+    - name: Find next release version
+      if: github.event.pull_request.merged == true
+      run: |
+        VERSION=$(./jx-release-version)
+        echo ::set-env name=release_version::$VERSION
+
+    - name: Push Docker Image with SHA
+      if: github.event.pull_request.merged != true
       run: |
         LONG_SHA=${{ github.sha }}
         SHORT_SHA="${LONG_SHA:0:7}"
         echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u danielinclouds --password-stdin
         docker build -t danielinclouds/semver-play-1:${SHORT_SHA} . --build-arg=PORT=8080
         docker push danielinclouds/semver-play-1:${SHORT_SHA} 
+    
+    - name: Push Docker Image with Tag
+      if: github.event.pull_request.merged == true
+      run: |
+        echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u danielinclouds --password-stdin
+        docker build -t danielinclouds/semver-play-1:${release_version} . --build-arg=PORT=8080
+        docker push danielinclouds/semver-play-1:${release_version} 
+
+    - name: Tag Repo
+      if: github.event.pull_request.merged == true
+      run: |
+        git tag "${release_version}"
+        hub push --tags
